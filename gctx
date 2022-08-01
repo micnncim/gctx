@@ -1,0 +1,84 @@
+#!/bin/bash
+
+set -e
+
+declare GCTX_GCLOUD_CONFIGURATION="${GCTX_GCLOUD_CONFIGURATION:-default}"
+
+readonly EXECUTABLES=(gcloud fzf)
+
+usage() {
+  cat <<EOF
+Manage GCP configurations.
+
+Subcommands:
+
+  account|a    switch an account
+  project|p    switch a project
+  help|h       show help
+
+Dependencies: ${EXECUTABLES[@]}
+
+EOF
+}
+
+# Verify if executables are in the PATH.
+check_executables() {
+  for e in "${EXECUTABLES[@]}"; do
+    if ! type -p "${e}" >/dev/null; then
+      echo "${e} not found on the system" >&2
+      return 1
+    fi
+  done
+}
+
+switch_account() {
+  gcloud config set account "$(list_accounts | fzf)"
+  gcloud config configurations activate "${GCTX_GCLOUD_CONFIGURATION}"
+}
+
+# TODO(micnncim): The number of projects can be massive and if so the `gcloud`
+# command will be extremely slow.
+switch_project() {
+  gcloud config set project "$(list_projects | fzf)"
+}
+
+list_accounts() {
+  gcloud auth list --format=json | jq -r '.[].account'
+}
+
+list_project() {
+  gcloud projects list --format=json | jq -r '.[].projectId'
+}
+
+main() {
+  if [[ "$#" -lt 1 ]]; then
+    usage
+    return 1
+  fi
+
+  if ! check_executables; then
+    usage
+    return 1
+  fi
+
+  local -r cmd="${1}"
+
+  case $cmd in
+    'account' | 'a')
+      switch_account
+      ;;
+    'project' | 'p')
+      switch_project
+      ;;
+    'help' | 'h')
+      usage
+      return 0
+      ;;
+    *)
+      usage
+      return 1
+      ;;
+  esac
+}
+
+main "$@"
