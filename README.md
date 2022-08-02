@@ -8,9 +8,9 @@ Manage GCP configurations.
 
 Subcommands:
 
-  account|a    switch an account
-  project|p    switch a project
-  help|h       show help
+  account|a           switch an account
+  project|p           switch a project
+  help|--help|-h      show help
 
 Dependencies: gcloud fzf
 
