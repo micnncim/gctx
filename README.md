@@ -12,6 +12,6 @@ Subcommands:
   project|p           switch a project
   help|--help|-h      show help
 
-Dependencies: gcloud fzf
+Dependencies: gcloud jq fzf
 
 ```

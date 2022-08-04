@@ -4,7 +4,7 @@ set -e
 
 declare GCTX_GCLOUD_CONFIGURATION="${GCTX_GCLOUD_CONFIGURATION:-default}"
 
-readonly EXECUTABLES=(gcloud fzf)
+readonly EXECUTABLES=(gcloud jq fzf)
 
 usage() {
   cat <<EOF
