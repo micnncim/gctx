@@ -13,6 +13,7 @@ Manage GCP configurations.
 Subcommands:
 
   account|a           switch an account
+  configuration|c     switch a configuration
   project|p           switch a project
   help|--help|-h      show help
 
@@ -36,6 +37,10 @@ switch_account() {
   gcloud config configurations activate "${GCTX_GCLOUD_CONFIGURATION}"
 }
 
+switch_configuration() {
+  gcloud config configurations activate "$(list_configurations | fzf)"
+}
+
 # TODO(micnncim): The number of projects can be massive and if so the `gcloud`
 # command will be extremely slow.
 switch_project() {
@@ -44,6 +49,10 @@ switch_project() {
 
 list_accounts() {
   gcloud auth list --format=json | jq -r '.[].account'
+}
+
+list_configurations() {
+  gcloud config configurations list --format json | jq -r '.[].name'
 }
 
 list_projects() {
@@ -66,6 +75,9 @@ main() {
   case $cmd in
     'account' | 'a')
       switch_account
+      ;;
+    'configuration' | 'c')
+      switch_configuration
       ;;
     'project' | 'p')
       switch_project
