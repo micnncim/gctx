@@ -35,6 +35,10 @@ check_executables() {
 switch_account() {
   gcloud config set account "$(list_accounts | fzf)"
   gcloud config configurations activate "${GCTX_GCLOUD_CONFIGURATION}"
+
+  echo >&2
+  echo "You might want to run the following command to update your access:" >&2
+  echo "  $ gcloud auth login --update-adc" >&2
 }
 
 switch_configuration() {
