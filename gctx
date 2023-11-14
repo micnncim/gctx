@@ -36,9 +36,9 @@ switch_account() {
   gcloud config set account "$(list_accounts | fzf)"
   gcloud config configurations activate "${GCTX_GCLOUD_CONFIGURATION}"
 
-  echo >&2
-  echo "You might want to run the following command to update your access:" >&2
-  echo "  $ gcloud auth login --update-adc" >&2
+  if ask "Do you want to run the following command to update your access?" >&2; then
+    gcloud auth login --update-adc
+  fi
 }
 
 switch_configuration() {
@@ -61,6 +61,23 @@ list_configurations() {
 
 list_projects() {
   gcloud projects list --format="value(projectId)"
+}
+
+# Return 0 if success, which we interpret as 'yes'. Otherwise, return 1.
+ask() {
+  local -r prompt="$1"
+  local answer=""
+
+  while [[ ! "${answer}" =~ ^[YyNn]$ ]]; do
+    read -rp "${prompt} (Y/n): " answer
+    answer=${answer:-Y}
+  done
+
+  if [[ "${answer}" =~ ^[Yy]$ ]]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 main() {
